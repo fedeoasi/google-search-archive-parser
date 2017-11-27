@@ -1,9 +1,9 @@
 package com.github.fedeoasi
 
-import java.io.FileOutputStream
-import java.nio.file.Paths
+import java.nio.file.{Path, Paths}
 import java.time.Instant
 
+import com.github.tototoshi.csv.{CSVReader, CSVWriter}
 import resource._
 
 object SearchMain {
@@ -25,22 +25,58 @@ object SearchMain {
     sb.append(s"Found ${entries.size} searches\n")
     val rankedQueries = rank(entries)
     sb.append(s"Found ${rankedQueries.size} distinct searches\n")
-    val k = 20
+    val k = 10
     val topKQueries = rankedQueries.take(k)
     sb.append(s"Top $k queries\n")
     sb.append(s"${topKQueries.mkString("\n")}\n")
     sb.toString
   }
 
-  def printToFile(strings: Seq[String], filename: String): Unit = {
-    managed(new FileOutputStream(filename)).acquireAndGet { fos =>
-      fos.write(strings.mkString("\n").getBytes())
+  def printToFile(rows: Seq[Seq[Any]], file: Path, append: Boolean = false): Unit = {
+    managed(CSVWriter.open(file.toFile, append = append)).acquireAndGet { writer =>
+      writer.writeAll(rows)
     }
+  }
+
+  private def printRankedQueries(entries: Seq[SearchEntry]) = {
+    val header = Seq("Query", "Count", "FirstOccurred", "LastOccurred")
+    val rows = rank(entries).map { re => Seq(re.query, re.rank, re.minTimestamp, re.maxTimestamp) }
+    printToFile(Seq(header) ++ rows, Paths.get("queries.txt"))
+  }
+
+  private def readSearchEntries(file: Path): Seq[SearchEntry] = {
+    managed(CSVReader.open(file.toFile)).acquireAndGet { reader =>
+      reader.allWithHeaders().map { row =>
+        SearchEntry(row("Query"), Instant.parse(row("Timestamp")))
+      }
+    }
+  }
+
+  private def printAllQueries(entries: Seq[SearchEntry], file: Path) = {
+    val entriesToAdd = if (file.toFile.exists()) {
+      val existingEntries = readSearchEntries(file)
+      if (existingEntries.nonEmpty) {
+        val maxTimestamp = existingEntries.maxBy(_.timestamp).timestamp
+        entries.filter(_.timestamp.isAfter(maxTimestamp))
+      } else {
+        entries
+      }
+    } else {
+      val header = Seq("Query", "Timestamp")
+      printToFile(Seq(header), file)
+      entries
+    }
+    val sortedEntries = entriesToAdd.sortBy(_.timestamp)
+    val since = sortedEntries.headOption.map(e => s"since ${e.timestamp}").getOrElse("")
+    println(s"Adding ${sortedEntries.size} search entries $since")
+    val rows = sortedEntries.map { re => Seq(re.query, re.timestamp) }
+    printToFile(rows, file, append = true)
   }
 
   def main(args: Array[String]): Unit = {
     val entries = SearchDeserializer.parse(Paths.get(args(0)))
     println(summary(entries))
-    printToFile(rank(entries).map(re => s"${re.query},${re.rank},${re.minTimestamp},${re.maxTimestamp}"), "queries.txt")
+    printAllQueries(entries, Paths.get("all-queries.csv"))
+    printRankedQueries(entries)
   }
 }
