@@ -17,7 +17,6 @@ object SearchDeserializer {
 
   def parse(dir: Path): Seq[SearchEntry] = {
     val files = dir.toFile.listFiles().filter(_.getName.endsWith(".json"))
-    println(files)
     files.toSeq.flatMap { file =>
       println(s"Reading file $file")
       val json = Source.fromFile(file).getLines().mkString("\n")
