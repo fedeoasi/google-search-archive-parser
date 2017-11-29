@@ -1,0 +1,14 @@
+{
+  "event": [
+    {
+      "query": {
+        "id": [
+          {
+            "timestamp_usec": "1253197536140442"
+          }
+        ],
+        "query_text": "second query"
+      }
+    }
+  ]
+}

@@ -13,7 +13,7 @@ case class Query(query_text: String, id: Seq[TimestampHolder])
 case class TimestampHolder(timestamp_usec: String)
 
 object SearchDeserializer {
-  implicit val formats = org.json4s.DefaultFormats
+  private implicit val formats = org.json4s.DefaultFormats
 
   def parse(dir: Path): Seq[SearchEntry] = {
     val files = dir.toFile.listFiles().filter(_.getName.endsWith(".json"))
@@ -26,6 +26,6 @@ object SearchDeserializer {
         val timestamp = Instant.ofEpochMilli(timestampLong)
         SearchEntry(query, timestamp)
       }
-    }
+    }.sortBy(_.timestamp)
   }
 }

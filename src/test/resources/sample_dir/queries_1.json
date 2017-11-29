@@ -1,0 +1,24 @@
+{
+  "event": [
+    {
+      "query": {
+        "id": [
+          {
+            "timestamp_usec": "1251984857580024"
+          }
+        ],
+        "query_text": "first query"
+      }
+    },
+    {
+      "query": {
+        "id": [
+          {
+            "timestamp_usec": "1253261578475602"
+          }
+        ],
+        "query_text": "third query"
+      }
+    }
+  ]
+}
