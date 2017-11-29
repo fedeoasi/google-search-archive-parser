@@ -17,8 +17,10 @@ Once you have obtained your archive, extract it to a known location.
 The tool will need the path to the extracted directory that contains
 the JSON files.
 
-Example:
+Run this from the project directory:
+```sh
   sbt "runMain com.github.fedeoasi.SearchMain <EXTRACTED_FOLDER>/Takeout/Searches"
+```
 
 On its first run, the tool will create a new file called all-queries.csv,
 a file containing all of your searches along with the timestamp when
