@@ -1,4 +1,4 @@
-# google-search-parser
+# google-search-archive-parser
 
 A set of command line tools to work with your personal search data
 exported from Google search.
