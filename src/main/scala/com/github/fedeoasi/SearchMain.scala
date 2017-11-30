@@ -7,10 +7,11 @@ object SearchMain {
   case class RankedQuery(query: String, rank: Long, minTimestamp: Instant, maxTimestamp: Instant)
 
   def rank(entries: Seq[SearchEntry]): Seq[RankedQuery] = {
-    val rankedQueries = entries.groupBy(_.query).map { case (query, entriesForQuery) =>
-      val minTimestamp = entriesForQuery.minBy(_.timestamp).timestamp
-      val maxTimestamp = entriesForQuery.maxBy(_.timestamp).timestamp
-      RankedQuery(query, entriesForQuery.size, minTimestamp, maxTimestamp)
+    val rankedQueries = entries.groupBy(_.query).map {
+      case (query, entriesForQuery) =>
+        val minTimestamp = entriesForQuery.minBy(_.timestamp).timestamp
+        val maxTimestamp = entriesForQuery.maxBy(_.timestamp).timestamp
+        RankedQuery(query, entriesForQuery.size, minTimestamp, maxTimestamp)
     }
     rankedQueries.toSeq
       .sortBy(_.rank)
@@ -34,7 +35,6 @@ object SearchMain {
     val rows = rank(entries).map { re => Seq(re.query, re.rank, re.minTimestamp, re.maxTimestamp) }
     CsvHelpers.writeCsv(Seq(header) ++ rows, Paths.get("queries.txt"))
   }
-
 
   def main(args: Array[String]): Unit = {
     val entries = SearchDeserializer.parse(Paths.get(args(0)))

@@ -2,7 +2,7 @@ package com.github.fedeoasi
 
 import java.time.Instant
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.{ FunSpec, Matchers }
 import SearchEntryCsvPersistence._
 
 class SearchEntryCsvPersistenceTest extends FunSpec with Matchers {

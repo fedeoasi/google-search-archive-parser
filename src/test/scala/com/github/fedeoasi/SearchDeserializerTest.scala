@@ -3,7 +3,7 @@ package com.github.fedeoasi
 import java.nio.file.Paths
 import java.time.Instant
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.{ FunSpec, Matchers }
 
 class SearchDeserializerTest extends FunSpec with Matchers {
   private val directory = Paths.get("src/test/resources/sample_dir")
