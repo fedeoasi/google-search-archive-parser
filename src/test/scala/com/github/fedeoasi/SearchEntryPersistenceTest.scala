@@ -3,9 +3,9 @@ package com.github.fedeoasi
 import java.time.Instant
 
 import org.scalatest.{ FunSpec, Matchers }
-import SearchEntryCsvPersistence._
+import SearchEntryPersistence._
 
-class SearchEntryCsvPersistenceTest extends FunSpec with Matchers {
+class SearchEntryPersistenceTest extends FunSpec with Matchers {
   describe("with two search entries") {
     val entries = Seq(
       SearchEntry("a", Instant.parse("2017-01-01T12:00:00.000Z")),

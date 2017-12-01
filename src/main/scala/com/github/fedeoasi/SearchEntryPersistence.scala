@@ -6,7 +6,7 @@ import java.time.Instant
 import com.github.tototoshi.csv.CSVReader
 import resource._
 
-object SearchEntryCsvPersistence {
+object SearchEntryPersistence {
   private val QueryField = "Query"
   private val TimestampField = "Timestamp"
 

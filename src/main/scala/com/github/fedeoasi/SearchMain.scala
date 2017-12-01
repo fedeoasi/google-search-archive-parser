@@ -39,7 +39,7 @@ object SearchMain {
   def main(args: Array[String]): Unit = {
     val entries = SearchDeserializer.parse(Paths.get(args(0)))
     println(summary(entries))
-    SearchEntryCsvPersistence.writeIncrementally(entries, Paths.get("all-queries.csv"))
+    SearchEntryPersistence.writeIncrementally(entries, Paths.get("all-queries.csv"))
     printRankedQueries(entries)
   }
 }
