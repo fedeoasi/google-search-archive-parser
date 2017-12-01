@@ -6,6 +6,8 @@ import java.time.Instant
 import com.github.tototoshi.csv.CSVReader
 import resource._
 
+import scala.io.Source
+
 object SearchEntryPersistence {
   private val QueryField = "Query"
   private val TimestampField = "Timestamp"
@@ -20,22 +22,21 @@ object SearchEntryPersistence {
 
   def write(entries: Seq[SearchEntry], toFile: Path): Unit = {
     val header = Seq(QueryField, TimestampField)
-    CsvHelpers.writeCsv(Seq(header), toFile)
+    CsvHelpers.writeCsv(Seq(header) ++ toCsvSeq(entries), toFile)
   }
 
   def writeIncrementally(entries: Seq[SearchEntry], file: Path): Unit = {
-    val existingEntries = if (file.toFile.exists()) {
-      read(file)
-    } else {
+    val existingEntries = if (!file.toFile.exists() || isEmpty(file)) {
       write(Seq.empty, file)
       Seq.empty
+    } else {
+      read(file)
     }
     incrementalWriteAction(existingEntries, entries) match {
       case Append(entriesToAppend) =>
         val since = entriesToAppend.headOption.map(e => s"since ${e.timestamp}").getOrElse("")
         println(s"Adding ${entriesToAppend.size} search entries $since")
-        val rows = entriesToAppend.map { re => Seq(re.query, re.timestamp) }
-        CsvHelpers.writeCsv(rows, file, append = true)
+        CsvHelpers.writeCsv(toCsvSeq(entriesToAppend), file, append = true)
       case DoNothing =>
         println(s"No new entries to add")
     }
@@ -55,6 +56,16 @@ object SearchEntryPersistence {
       DoNothing
     } else {
       Append(entriesToAdd.sortBy(_.timestamp))
+    }
+  }
+
+  private def toCsvSeq(entries: Seq[SearchEntry]): Seq[Seq[Any]] = {
+    entries.map { re => Seq(re.query, re.timestamp) }
+  }
+
+  private def isEmpty(file: Path): Boolean = {
+    managed(Source.fromFile(file.toFile)).acquireAndGet { source =>
+      Option(source.bufferedReader().readLine()).isEmpty
     }
   }
 

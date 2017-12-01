@@ -1,5 +1,6 @@
 package com.github.fedeoasi
 
+import java.nio.file.{ Files, Path }
 import java.time.Instant
 
 import org.scalatest.{ FunSpec, Matchers }
@@ -36,6 +37,33 @@ class SearchEntryPersistenceTest extends FunSpec with Matchers {
         incrementalWriteAction(entries, entries ++ Seq(newEntry)) shouldBe Append(Seq(newEntry))
       }
 
+    }
+
+    it("writes and reads them back from a file") {
+      withTmpFile("queries", "csv") {
+        tmpFile =>
+          write(entries, tmpFile)
+          read(tmpFile) shouldBe entries
+      }
+    }
+
+    it("writes and appends incrementally to a file") {
+      withTmpFile("queries", "csv") {
+        tmpFile =>
+          writeIncrementally(entries.take(1), tmpFile)
+          read(tmpFile) shouldBe entries.take(1)
+          writeIncrementally(entries.drop(1), tmpFile)
+          read(tmpFile) shouldBe entries
+      }
+    }
+  }
+
+  def withTmpFile[T](prefix: String, suffix: String)(f: Path => T): T = {
+    val tmpFile = Files.createTempFile("queries", "csv")
+    try {
+      f(tmpFile)
+    } finally {
+      tmpFile.toFile.delete()
     }
   }
 }
