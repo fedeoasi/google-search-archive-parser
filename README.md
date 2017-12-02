@@ -19,7 +19,7 @@ the JSON files.
 
 Run this from the project directory:
 ```sh
-  sbt "runMain com.github.fedeoasi.SearchMain <EXTRACTED_FOLDER>/Takeout/Searches"
+  sbt "runMain com.github.fedeoasi.SearchApplication -s <EXTRACTED_FOLDER>/Takeout/Searches"
 ```
 
 On its first run, the tool will create a new file called all-queries.csv,

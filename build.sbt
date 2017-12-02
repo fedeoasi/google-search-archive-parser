@@ -13,7 +13,8 @@ lazy val root = (project in file(".")).
       arm,
       json4s,
       scalaCsv,
-      scalaTest % Test),
+      scalaTest % Test,
+      scopt),
     scalariformPreferences := scalariformPreferences.value
       .setPreference(DoubleIndentConstructorArguments, true)
       .setPreference(DanglingCloseParenthesis, Preserve)

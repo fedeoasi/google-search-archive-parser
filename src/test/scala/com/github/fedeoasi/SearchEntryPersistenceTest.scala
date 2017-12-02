@@ -1,12 +1,11 @@
 package com.github.fedeoasi
 
-import java.nio.file.{ Files, Path }
 import java.time.Instant
 
+import com.github.fedeoasi.SearchEntryPersistence._
 import org.scalatest.{ FunSpec, Matchers }
-import SearchEntryPersistence._
 
-class SearchEntryPersistenceTest extends FunSpec with Matchers {
+class SearchEntryPersistenceTest extends FunSpec with Matchers with TemporaryFiles {
   describe("with two search entries") {
     val entries = Seq(
       SearchEntry("a", Instant.parse("2017-01-01T12:00:00.000Z")),
@@ -55,15 +54,6 @@ class SearchEntryPersistenceTest extends FunSpec with Matchers {
           writeIncrementally(entries.drop(1), tmpFile)
           read(tmpFile) shouldBe entries
       }
-    }
-  }
-
-  def withTmpFile[T](prefix: String, suffix: String)(f: Path => T): T = {
-    val tmpFile = Files.createTempFile("queries", "csv")
-    try {
-      f(tmpFile)
-    } finally {
-      tmpFile.toFile.delete()
     }
   }
 }
