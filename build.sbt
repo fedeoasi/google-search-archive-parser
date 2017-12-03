@@ -1,5 +1,6 @@
 import Dependencies._
 import scalariform.formatter.preferences._
+import ReleaseTransformations._
 
 lazy val root = (project in file(".")).
   settings(
@@ -17,5 +18,17 @@ lazy val root = (project in file(".")).
       scopt),
     scalariformPreferences := scalariformPreferences.value
       .setPreference(DoubleIndentConstructorArguments, true)
-      .setPreference(DanglingCloseParenthesis, Preserve)
+      .setPreference(DanglingCloseParenthesis, Preserve),
+    releaseProcess := Seq[ReleaseStep](
+      checkSnapshotDependencies,
+      inquireVersions,
+      runClean,
+      runTest,
+      setReleaseVersion,
+      commitReleaseVersion,
+      tagRelease,
+      setNextVersion,
+      commitNextVersion,
+      pushChanges
+    )
   )
