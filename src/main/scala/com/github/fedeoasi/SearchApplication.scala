@@ -1,7 +1,7 @@
 package com.github.fedeoasi
 
 import java.io.File
-import java.nio.file.{Path, Paths}
+import java.nio.file.{ Path, Paths }
 
 class SearchTestableApplication(val searchCsv: Path) {
 
